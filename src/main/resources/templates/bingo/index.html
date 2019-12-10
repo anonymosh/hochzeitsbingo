@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" th:href="@{/webjars/fomantic-ui/dist/semantic.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/image-picker.css}"/>
+    <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <script th:src="@{/webjars/fomantic-ui/dist/semantic.min.js}"></script>
+    <script th:src="@{/js/image-picker.min.js}"></script>
+    <title>B.I.N.G.O</title>
+</head>
+<html>
+<body>
+<div class="ui container">
+    <h1>Bingo Generator</h1>
+    <form class="ui form" th:object="${bingoForm}" method="post" enctype="multipart/form-data"
+          th:classappend="${#fields.hasErrors('*')?'error':''}">
+        <h2>1. Template auswählen</h2>
+        <div class="ui field">
+            <select id="templateselect" class="image-picker" th:field="*{templateName}">
+                <option value="wedding" th:data-img-src="@{/wedding_template.png}">Hochzeit</option>
+                <option value="normal" th:data-img-src="@{/normal_template.png}">Normal</option>
+            </select>
+        </div>
+        <h2>2. Text eingeben oder Datei hochladen</h2>
+        <div class="ui error message" th:if="${#fields.hasErrors('global')}">
+            <p th:each="err : ${#fields.errors('global')}" th:text="${err}">Input is incorrect</p>
+        </div>
+        <div class="field">
+            <div id="manualupload" class="ui toggle checkbox">
+                <input type="checkbox" th:field="*{useFile}">
+                <label>Ich möchte lieber eine Datei hochladen</label>
+            </div>
+        </div>
+        <div id="files" class="ui inline field" style="display: none">
+            <input type="file" th:field="*{file}"/>
+            <div class="ui left pointing red basic label" th:if="${#fields.hasErrors('file')}"
+                 th:errors="*{file}">
+            </div>
+            <i class="large question circle outline icon link"></i>
+            <div class="ui popup">
+                <div class="header">Eigene Wörter hochladen</div>
+                <div class="content">
+                    Einfach eine Textdatei (*.csv oder *.txt) anlegen:
+                    <ul>
+                        <li>ein Satz pro Zeile</li>
+                        <li>hinter dem Satz ein Semikolon (;)</li>
+                        <li>hinter dem Semikolon eine "1" für schwere Sachen</li>
+                        <li>oder eine "0" für einfache</li>
+                    </ul>
+                    z.B:<br/><br/>
+                    Mag gerne Schokolade;0<br/>
+                    War schonmal in Afrika;1<br/>
+                    Hat eine Brille auf;0<br/>
+                </div>
+            </div>
+        </div>
+        <!--<div class="ui field">
+            <div class="ui grid">
+                <span class="ui big text center aligned column">- oder -</span>
+            </div>
+        </div>-->
+        <div id="textboxes" class="two fields">
+            <div class="field">
+                <label>Einfache Fragen</label>
+                <textarea th:field="*{normalQuestions}"
+                          placeholder="Ein Satz pro Zeile und mindestens 25 Sätze"></textarea>
+                <div class="ui pointing red basic label" th:if="${#fields.hasErrors('normalQuestions')}"
+                     th:errors="*{normalQuestions}">
+                </div>
+            </div>
+            <div class="field">
+                <label>Schwere Fragen</label>
+                <textarea th:field="*{hardQuestions}" placeholder="Ein Satz pro Zeile (Optional)"></textarea>
+                <div class="ui pointing red basic label" th:if="${#fields.hasErrors('hardQuestions')}"
+                     th:errors="*{hardQuestions}">
+                </div>
+            </div>
+        </div>
+        <h2>3. Anzahl auswählen</h2>
+        <div class="ui field">
+            <label>Teilnehmer</label>
+            <input type="text" th:field="*{participants}"/>
+            <div class="ui pointing red basic label" th:if="${#fields.hasErrors('participants')}"
+                 th:errors="*{participants}">
+            </div>
+        </div>
+        <button type="submit" class="ui teal labeled icon button">
+            <i class="icon cat"></i>
+            Erstellen
+        </button>
+    </form>
+    <footer class="ui vertical footer segment"></footer>
+</div>
+<script type="application/javascript">
+    $('.ui.dropdown')
+        .dropdown();
+    $('#manualupload')
+        .checkbox({
+            fireOnInit: true,
+            onChecked: function() {
+                $('#textboxes').hide();
+                $('#files').show();
+            },
+            onUnchecked: function() {
+                $('#textboxes').show();
+                $('#files').hide();
+            }
+        });
+    $('.question.icon')
+        .popup({
+            inline: true
+        });
+    $("#templateselect").imagepicker();
+</script>
+</body>
+</html>
