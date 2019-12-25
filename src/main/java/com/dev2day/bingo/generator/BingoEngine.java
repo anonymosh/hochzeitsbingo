@@ -1,11 +1,15 @@
 package com.dev2day.bingo.generator;
 
 import com.dev2day.bingo.model.Bingo;
+import org.apache.batik.transcoder.Transcoder;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.fop.svg.PDFTranscoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -14,6 +18,7 @@ public class BingoEngine {
     private final Logger logger = LoggerFactory.getLogger(BingoEngine.class);
 
     private Map<String, Integer> countMap = new HashMap<>();
+    private Transcoder svgToPdfTrancscoder = new PDFTranscoder();
 
     public byte[] generate(Bingo bingo) {
 
@@ -26,8 +31,12 @@ public class BingoEngine {
 
             for (int i = 1; i <= bingo.getParticipants(); i++) {
                 String out = createSVG(bingo.getTemplate(), bingo.getNormalWords(), bingo.getHardWords());
-                byte[] svg = out.getBytes();
-                zos.putNextEntry(new ZipEntry("bingo_" + i + ".svg"));
+                TranscoderInput transcoderInput = new TranscoderInput(new StringReader(out));
+                ByteArrayOutputStream pdfOut = new ByteArrayOutputStream();
+                TranscoderOutput transcoderOutput = new TranscoderOutput(pdfOut);
+                svgToPdfTrancscoder.transcode(transcoderInput, transcoderOutput);
+                byte[] svg = pdfOut.toByteArray();
+                zos.putNextEntry(new ZipEntry("bingo_" + i + ".pdf"));
                 zos.write(svg);
                 zos.closeEntry();
                 zos.flush();
@@ -37,7 +46,7 @@ public class BingoEngine {
             zos.flush();
             zos.close();
             return baos.toByteArray();
-        } catch (IOException e) {
+        } catch (IOException | TranscoderException e) {
             e.printStackTrace();
             return null;
         }
