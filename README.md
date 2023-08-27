@@ -2,7 +2,7 @@ The CSV list of words determines if a task is hard (1) or not (0). Hard tasks wi
 The SVG can be changed as long as the placeholders can still be found (quakX)
 
 Do a build: 
-`gradlew clean build`
+`mvn clean package`
 
 Do a run:
 `java -jar build\libs\Bingo-1.0-SNAPSHOT.jar`

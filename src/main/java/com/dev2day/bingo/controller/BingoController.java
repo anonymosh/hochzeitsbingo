@@ -126,6 +126,8 @@ public class BingoController {
             is = BingoController.class.getClassLoader().getResourceAsStream("static/wedding_template.svg");
         } else if ("normal".equals(name)) {
             is = BingoController.class.getClassLoader().getResourceAsStream("static/normal_template.svg");
+        } else if ("wedding2".equals(name)) {
+            is = BingoController.class.getClassLoader().getResourceAsStream("static/wedding_adina.svg");
         }
         if (is == null) {
             return "";
